@@ -161,7 +161,7 @@ def inject_base_css() -> None:
         }}
         .ceva-stat-value {{
             font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums;
-            font-size: 36px; font-weight: 500; color: {TEXT_ON_DARK}; line-height: 1.15; margin-top: 2px;
+            font-size: 44px; font-weight: 500; color: {TEXT_ON_DARK}; line-height: 1.15; margin-top: 2px;
         }}
         .ceva-stat-value.accent {{ color: {ACCENT}; }}
         .ceva-stat-sub {{ font-size: 12px; color: {TEXT_FAINT}; margin-top: 3px; }}
@@ -184,7 +184,7 @@ def inject_base_css() -> None:
         }}
 
         .ceva-plate {{
-            font-family: "Archivo", sans-serif; font-weight: 900; font-size: 40px; color: {TEXT_ON_DARK};
+            font-family: "Archivo", sans-serif; font-weight: 900; font-size: 26px; color: {TEXT_ON_DARK};
             letter-spacing: .01em; font-variant-numeric: tabular-nums;
         }}
         .ceva-plate-sub {{ font-size: 12.5px; color: {TEXT_DIM}; margin-top: 4px; }}
