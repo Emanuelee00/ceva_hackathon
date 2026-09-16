@@ -62,6 +62,15 @@ EXTRA_CARS = [
      "destination": {"city": "Nice", "lat": 43.7102, "lng": 7.2620}, "compoundId": "CEVA MARSEILLE", "status": "disponible"},
 ]
 
+# A second car per stop on the same route, same destinations, but with a
+# randomized model + loadingRatio (seeded, so still reproducible run to
+# run) instead of hand-picked values — gives the lot builder more than one
+# candidate per city.
+_EXTRA_DESTINATIONS_2 = [
+    ("Marseille", 43.2965, 5.3698), ("Toulon", 43.1242, 5.9280),
+    ("Cannes", 43.5528, 7.0174), ("Nice", 43.7102, 7.2620),
+]
+
 
 def _fake_vin(rng: random.Random, model: str) -> str:
     wmi = WMI_BY_BRAND.get(model.split()[0], "VF1")
@@ -87,4 +96,18 @@ def generate_cars(n: int = 50, seed: int = 42) -> list[dict]:
     return cars
 
 
-MOCK_CARS = generate_cars() + EXTRA_CARS
+def _generate_extra_cars_2(seed: int = 7) -> list[dict]:
+    rng = random.Random(seed)
+    cars = []
+    for city, lat, lng in _EXTRA_DESTINATIONS_2:
+        model, category, base_ratio = rng.choice(MODELS)
+        cars.append({
+            "id": _fake_vin(rng, model), "model": model, "category": category,
+            "loadingRatio": round(base_ratio + rng.uniform(-0.08, 0.08), 2),
+            "destination": {"city": city, "lat": lat, "lng": lng},
+            "compoundId": "CEVA MARSEILLE", "status": "disponible",
+        })
+    return cars
+
+
+MOCK_CARS = generate_cars() + EXTRA_CARS + _generate_extra_cars_2()
