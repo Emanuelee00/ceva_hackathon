@@ -26,6 +26,9 @@ OSRM_TRIP_URL = (
     "?source=first&roundtrip=false&geometries=geojson&overview=full"
 )
 
+DARK_TILES = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+DARK_TILES_ATTR = '&copy; <a href="https://carto.com/attributions">CARTO</a> &copy; OpenStreetMap contributors'
+
 
 @st.cache_data(ttl=3600)
 def _solve_trip(coords: tuple) -> dict | None:
@@ -61,7 +64,7 @@ def render_trip_map(compound: str, destinations: list[dict]) -> dict | None:
     solved = _solve_trip(coords) or _fallback_trip(coords)
     order = solved["order"]
 
-    m = folium.Map(location=origin, tiles="OpenStreetMap")
+    m = folium.Map(location=origin, tiles=DARK_TILES, attr=DARK_TILES_ATTR)
     for stop_num, idx in enumerate(order):  # 0 = origin, unlabeled
         lat, lng = coords[idx]
         color = NAVY if stop_num == 0 else ACCENT
