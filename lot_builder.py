@@ -10,7 +10,7 @@ import pandas as pd
 import streamlit as st
 
 from mock_fleet import COMPOUNDS, MOCK_CARS
-from theme import ACCENT, TEXT_SECONDARY
+from theme import badge, stat_tile
 from trip_map import render_trip_map
 
 
@@ -33,7 +33,12 @@ def _selected_destinations(ids: list) -> list[dict]:
 
 
 def render_lot_builder() -> None:
-    st.subheader("1. Compose the lot")
+    h1, h2 = st.columns([3, 1])
+    h1.subheader("1. Compose the lot")
+    h2.markdown(
+        f'<div style="text-align:right;margin-top:8px;">{badge("mock", "Simulated inventory")}</div>',
+        unsafe_allow_html=True,
+    )
     compound = st.selectbox("Departure compound", COMPOUNDS, key="lot_compound")
 
     df = _cars_table(compound, set(st.session_state.get("lot_car_ids", [])))
@@ -56,14 +61,14 @@ def render_lot_builder() -> None:
     trip = render_trip_map(compound, destinations)
     st.session_state.lot_trip = trip
     if not trip:
-        st.caption("Select at least one car to see its route on the map.")
+        st.markdown(
+            '<div class="ceva-empty">Select at least one car above to build its route on the map.</div>',
+            unsafe_allow_html=True,
+        )
 
     total = selected["loadingRatio"].sum()
     st.session_state.lot_loading = total
     st.markdown(
-        '<div style="font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.06em;'
-        f'color:{TEXT_SECONDARY};margin-top:10px;">LOT LOADING</div>'
-        f'<div style="font-family:ui-monospace,monospace;font-size:32px;font-weight:700;'
-        f'color:{ACCENT};">{total:.2f}</div>',
+        f'<div style="margin-top:12px;">{stat_tile("Lot loading", f"{total:.2f}", accent=True)}</div>',
         unsafe_allow_html=True,
     )

@@ -14,13 +14,15 @@ from loading_factor_alert import truck_options
 from lot_builder import render_lot_builder
 from matching_opportunity import build_trips
 from proposals_ui import render_proposals
-from theme import ACCENT, TEXT_SECONDARY
+from theme import inject_base_css, logo_data_uri
 from truck_picker import render_truck_picker
 from underloading_stats import compute_underloading_stats
 from agent.graph import build_graph
 from agent.tools import methodology
 
-st.set_page_config(page_title="FVL Transport — Agentic Dashboard", layout="wide")
+st.set_page_config(page_title="FVL Dispatch Intelligence — CEVA", layout="wide")
+
+STEPS = ["Compose lot", "Assign truck", "Check loading", "Optimize"]
 
 
 @st.cache_resource
@@ -41,35 +43,36 @@ def get_graph():
 
 
 def render_result(tool: str, result: dict) -> None:
-    if tool == "empty_km_cost":
-        c1, c2, c3 = st.columns(3)
-        c1.metric("Empty km share", f"{result['empty_share']:.1%}")
-        c2.metric("All-in cost", f"€{result['cost_allin']:,.0f}")
-        c3.metric("CO2", f"{result['co2_t']:,.0f} t")
-        st.bar_chart({name: km for name, km in result["top_origins"]})
-    elif tool == "matching_opportunity":
-        c1, c2 = st.columns(2)
-        c1.metric("Matched share (trips)", f"{result['matched_share']:.1%}")
-        c2.metric("Matched share (km)", f"{result['matched_km_share']:.1%}")
-    elif tool == "geo_mismatch":
-        st.metric("Correlation", f"{result['correlation']:.2f}")
-        st.write("Over-served:", result["over_served"])
-        st.write("Under-served:", result["under_served"])
-    elif tool == "fleet_concentration":
-        c1, c2 = st.columns(2)
-        c1.metric("Top 10% trucks handle", f"{result['top10_share']:.1%}")
-        c2.metric("Same-city trips", f"{result['same_city_share']:.1%}")
-    elif tool == "delay_analysis":
-        st.dataframe(result["rows"])
-    elif tool == "loading_factor_alert" and "historical_max" in result:
-        c1, c2 = st.columns(2)
-        c1.metric("Historical max", result["historical_max"])
-        c2.metric("Gap", result["gap"])
+    with st.container(border=True):
+        if tool == "empty_km_cost":
+            c1, c2, c3 = st.columns(3)
+            c1.metric("Empty km share", f"{result['empty_share']:.1%}")
+            c2.metric("All-in cost", f"€{result['cost_allin']:,.0f}")
+            c3.metric("CO2", f"{result['co2_t']:,.0f} t")
+            st.bar_chart({name: km for name, km in result["top_origins"]}, color="#D6001C")
+        elif tool == "matching_opportunity":
+            c1, c2 = st.columns(2)
+            c1.metric("Matched share (trips)", f"{result['matched_share']:.1%}")
+            c2.metric("Matched share (km)", f"{result['matched_km_share']:.1%}")
+        elif tool == "geo_mismatch":
+            st.metric("Correlation", f"{result['correlation']:.2f}")
+            st.write("Over-served:", result["over_served"])
+            st.write("Under-served:", result["under_served"])
+        elif tool == "fleet_concentration":
+            c1, c2 = st.columns(2)
+            c1.metric("Top 10% trucks handle", f"{result['top10_share']:.1%}")
+            c2.metric("Same-city trips", f"{result['same_city_share']:.1%}")
+        elif tool == "delay_analysis":
+            st.dataframe(result["rows"])
+        elif tool == "loading_factor_alert" and "historical_max" in result:
+            c1, c2 = st.columns(2)
+            c1.metric("Historical max (reference)", result["historical_max"])
+            c2.metric("Gap", result["gap"])
 
-    note = methodology(tool, result)
-    if note:
-        with st.expander("Data & assumptions used"):
-            st.markdown(note)
+        note = methodology(tool, result)
+        if note:
+            with st.expander("Data & assumptions used"):
+                st.markdown(note)
 
 
 def render_chat() -> None:
@@ -85,7 +88,7 @@ def render_chat() -> None:
 
     if question := st.chat_input("Ask about empty km, matching, geography, fleet, or delays..."):
         st.session_state.history.append({"role": "user", "content": question})
-        with st.spinner("Thinking..."):
+        with st.spinner("Analyzing the FVL dataset..."):
             out = graph.invoke({"question": question, "top_n": 10})
         st.session_state.history.append({
             "role": "assistant", "content": out["answer"],
@@ -97,6 +100,18 @@ def render_chat() -> None:
 def render_dispatcher_form() -> None:
     _, frames = load_data()
     trucks = truck_options(frames["fleet_raw"])
+
+    cars_ready = bool(st.session_state.get("lot_car_ids"))
+    step_html = ""
+    for i, label in enumerate(STEPS):
+        cls = "done" if i == 0 and cars_ready else ""
+        arrow = '<span class="ceva-step-arrow">&#8594;</span>' if i > 0 else ""
+        step_html += (
+            f'{arrow}<div class="ceva-step {cls}">'
+            f'<div class="ceva-step-dot">{"&#10003;" if cls == "done" else i + 1}</div>'
+            f'<div class="ceva-step-label">{label}</div></div>'
+        )
+    st.markdown(f'<div class="ceva-steps">{step_html}</div>', unsafe_allow_html=True)
 
     col1, col2 = st.columns([1, 1], gap="large")
     with col1:
@@ -118,11 +133,13 @@ def render_dispatcher_form() -> None:
 
 
 def main() -> None:
+    inject_base_css()
     st.markdown(
-        '<div style="display:flex;align-items:baseline;gap:12px;margin-bottom:4px;">'
-        f'<span style="font-size:19px;font-weight:700;color:{ACCENT};letter-spacing:-0.3px;">CEVA</span>'
-        f'<span style="font-size:14px;color:{TEXT_SECONDARY};">Transport — Agentic Dashboard</span>'
-        '</div>',
+        '<div class="ceva-header"><div class="ceva-header-left">'
+        f'<img src="{logo_data_uri()}" alt="CEVA Logistics">'
+        '<div><div class="ceva-product">FVL Dispatch Intelligence</div>'
+        '<div class="ceva-product-sub">Transport analytics &amp; dispatcher assist</div></div>'
+        '</div><span class="ceva-demo-tag">Hackathon Demo — Prototype</span></div>',
         unsafe_allow_html=True,
     )
     tab1, tab2 = st.tabs(["Dispatcher check", "Ask the data"])

@@ -700,6 +700,115 @@ values); full `AppTest` pass injecting a chat turn into
 chat turn ends up in state) — zero exceptions, expander
 "Data & assumptions used" renders with the exact same real numbers.
 
+## Visual redesign — enterprise CEVA branding (dataviz skill applied)
+
+Full visual pass across the whole app for a management/jury demo, following
+a detailed creative brief (graphics-only parts of it — the brief also had
+non-graphics rigor/correctness constraints already satisfied by existing
+behavior, left untouched). Used the `dataviz` skill's color-formula and
+mark-spec references rather than eyeballing colors.
+
+**Official logo, real colors**: `assets/ceva_logo.svg` downloaded from
+Wikimedia Commons (`Logo_of_CEVA_Logistics_(2023).svg`, the current mark —
+official brand-center page 403'd on fetch, so Commons was the next-best
+verifiable official-looking source), kept unmodified (no recreation). Its
+exact fill hexes were extracted directly from the file: navy `#1d2546`,
+red `#ff0000`. `theme.py`'s `NAVY`/`ACCENT` and `.streamlit/config.toml`'s
+`primaryColor` now use those real values — `ACCENT` is stepped down to
+`#D6001C` (not the pure `#ff0000`) because white-on-`#ff0000` is 4.0:1
+contrast, under the 4.5:1 WCAG AA text minimum; `#D6001C` clears 5.4:1
+while still reading as the same hue next to the mark in the header. This
+replaces the earlier `#A6192E` approximation used throughout the session
+before the real logo was found.
+
+**theme.py rewritten** as the single source of style, not just color
+constants: `logo_data_uri()` (base64-embeds the SVG so it can sit in a flex
+header next to text — `st.image` can't do that layout), `inject_base_css()`
+(one `<style>` block, called once in `app.py:main()`, defining reusable
+classes used across every component file instead of each file repeating
+inline CSS: `.ceva-header`, `.ceva-steps` (the 4-step flow strip), `.ceva-card`,
+`.ceva-stat-label/-value` (hero figures — switched from monospace to the
+default proportional sans per the dataviz skill's figure spec: "hero figure
+uses the same sans as everything else... proportional figures for big
+numbers, tabular-nums only in table columns"), `.ceva-meter-track/-fill`
+(the loading-gap gauge), `.ceva-badge` (+`-real`/`-mock`/`-estimate`
+modifiers — the data-provenance labels), `.ceva-empty` (empty states)),
+`stat_tile()` and `badge()` helper functions used by every component file.
+Old names (`ACCENT`, `TEXT_PRIMARY`, `TEXT_SECONDARY`, `BORDER`,
+`DOT_ON_ROUTE`, `DOT_DETOUR`) kept so existing call sites didn't all need
+import changes — only values were refined.
+
+**Header + step flow** (`app.py`): real logo + "FVL Dispatch Intelligence"
++ a "Hackathon Demo — Prototype" tag (never implies a shipped product).
+A `Compose lot → Assign truck → Check loading → Optimize` strip sits above
+the dispatcher tab — kept intentionally simple/honest: only step 1 lights
+up as "done" (a real, unambiguous signal — at least one car checked into
+the lot); steps 2-4 aren't fake-tracked as done since Streamlit's
+selectbox always has a default selection, so "truck picked" isn't a
+meaningful completion signal. No new session-state progress-tracking logic
+was added beyond this one real check.
+
+**Dispatcher components restyled** (`lot_builder.py`, `truck_picker.py`,
+`alert_ui.py`, `proposals_ui.py`, `trip_map.py`): hero numbers (lot
+loading, truck max, gap) now use `stat_tile()`; the loading-gap alert uses
+the new meter classes with the status-alert color always paired with an
+icon + text label ("⚠ Under-optimized trip"), never color alone; "Auto-
+optimize" is now `st.button(..., type="primary")` (Streamlit's native
+primary styling, themed via config.toml) while "See cars to add" stays
+secondary — satisfies "primary action" without custom CSS hacking
+Streamlit's button internals. Every truck "max" label now reads
+**"historical reference"**, not "capacity" or "max loading" alone — both
+in the picker and the trip-history expander caption — so it can't be
+mistaken for a certified physical limit (the FVL glossary itself only
+calls ~10 a "general rule"). Mock car sections got a `Simulated inventory`
+badge; the real-truck section got a `Real fleet data` badge — the
+visual real-vs-mock distinction the brief asked for. The map now colors
+the origin marker in `NAVY` (was a hardcoded near-black) and the
+destination markers in the refined `ACCENT`, plus a one-line color legend
+underneath. Table numeric columns switched from `font-family:monospace` to
+`font-variant-numeric:tabular-nums` (same visual alignment, correct CSS
+property per the dataviz mark spec instead of a full monospace face).
+
+**Auto-optimize before/after summary** (`alert_ui.py`): `_run_autofill`
+now also stores the real pre-optimization `lot_loading` value it was
+called with (`before_loading`) alongside the graph's own output — no new
+computation, just carrying forward a value that already existed in scope.
+`_render_autofill_log` renders 3 real stat tiles (Loading before / Loading
+after / Gap after) computed entirely from `check_loading`'s existing
+formula and the graph's own `added` list — no new metric, no invented
+number, per the brief's explicit "usando esclusivamente risultati
+realmente calcolati" constraint.
+
+**Chat tab** (`app.py`): each answer now renders inside
+`st.container(border=True)` (matches the dispatcher's card language) and
+the bar chart color was set to the same `#D6001C` accent instead of
+Streamlit's default blue, so a chat answer visually belongs to the same
+system as the dispatcher tab. Spinner copy changed from "Thinking..." to
+"Analyzing the FVL dataset..." (tone, not logic).
+
+**Skipped, on purpose**: the brief's non-graphics "Rigore" constraints
+(don't invent KPIs, don't change formulas/thresholds/agent behavior) were
+already satisfied by existing code and required no change — touched
+nothing there. The brief also asked to polish "Features & Roadmap" into a
+pitch view, but that tab was explicitly hidden by the user's own more
+recent instruction earlier in this session — left hidden, not resurrected,
+since a specific recent instruction outranks a generic pasted brief.
+
+**Verified**: full `AppTest` run of the dispatcher flow end-to-end (compose
+lot with real Marseille cars → assign a real truck → alert triggers →
+Auto-optimize via LangGraph → before/after summary renders with real
+numbers) — zero exceptions at every step; manual "See cars to add" flow
+re-verified; chat methodology expander re-verified; header/logo/stepper
+markup confirmed present (logo `<img>` tag, product name, demo tag, badges,
+"historical reference" wording) by inspecting the rendered markdown
+fragments AppTest exposes. A live-browser screenshot was attempted via
+Playwright (as the brief asked, "se disponibile") but hung at the same
+"fonts loaded" step documented earlier in this file as a known sandbox
+limitation, unrelated to this app — not resolved, DOM-level verification
+via AppTest was used instead, same substitute strategy as every other UI
+change in this session. A human should still do one manual look at
+http://localhost:8501 before presenting to judges/management.
+
 ## How to continue
 
 1. If cross-analysis with problems 4/5 is wanted for pitch narrative, load

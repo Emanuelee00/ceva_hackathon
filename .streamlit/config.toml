@@ -1,11 +1,13 @@
-# CEVA-style theme: deep red + navy, matching CEVA Logistics' current brand
-# (dark blue + red, adopted from parent CMA CGM in 2019). Exact official hex
-# codes weren't reachable (brand center / color-scraper sites blocked
-# fetches) — these are a defensible approximation from multiple independent
-# sources, not verified against CEVA's own brand guidelines.
+# CEVA brand theme, sourced from the official current logo (2023 mark,
+# assets/ceva_logo.svg, fetched from Wikimedia Commons): navy #1d2546 and
+# red #ff0000 are the exact hexes baked into that file. primaryColor below
+# is stepped down from the pure logo red for WCAG AA contrast on filled
+# buttons (white-on-#ff0000 is 4.0:1, under the 4.5:1 text minimum;
+# #d6001c clears 5.4:1 while reading as the same hue next to the mark).
 [theme]
-primaryColor = "#A6192E"
-backgroundColor = "#FAF9F5"
-secondaryBackgroundColor = "#F0ECE2"
-textColor = "#17140F"
+primaryColor = "#D6001C"
+backgroundColor = "#F6F6F4"
+secondaryBackgroundColor = "#EEF1F5"
+textColor = "#181A22"
 font = "sans serif"
+base = "light"

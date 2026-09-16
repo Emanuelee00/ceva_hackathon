@@ -50,22 +50,24 @@ def render_proposals() -> None:
     st.divider()
     st.subheader("4. Cars to add")
     if not proposals:
-        st.caption("No candidate car fits within the truck's max loading.")
+        st.markdown('<div class="ceva-empty">No candidate car fits within the truck\'s reference max.</div>', unsafe_allow_html=True)
         return
 
-    for col, label in zip(st.columns(COLUMN_WIDTHS), HEADERS):
-        col.markdown(f'<span style="white-space:nowrap;font-weight:600;">{label}</span>', unsafe_allow_html=True)
+    with st.container(border=True):
+        for col, label in zip(st.columns(COLUMN_WIDTHS), HEADERS):
+            col.markdown(f'<span style="white-space:nowrap;font-weight:600;">{label}</span>', unsafe_allow_html=True)
+        st.markdown("---")
 
-    for p in proposals:
-        car = p["car"]
-        cols = st.columns(COLUMN_WIDTHS)
-        cols[0].write(car["model"])
-        cols[1].markdown(f'<span style="color:{TEXT_SECONDARY}">{car["category"]}</span>', unsafe_allow_html=True)
-        cols[2].markdown(f'<span style="font-family:monospace">{car["loadingRatio"]:.2f}</span>', unsafe_allow_html=True)
-        cols[3].markdown(f'<span style="font-family:monospace">{p["newTotal"]:.2f}</span>', unsafe_allow_html=True)
-        cols[4].markdown(f'<span style="font-family:monospace;color:{TEXT_SECONDARY}">{p["gapRemaining"]:.2f}</span>', unsafe_allow_html=True)
-        cols[5].markdown(_dot_label(p["integration"]), unsafe_allow_html=True)
-        cols[6].markdown(f'<span style="font-family:monospace;color:{TEXT_SECONDARY}">{p["detourKm"]:.1f}</span>', unsafe_allow_html=True)
-        cols[7].markdown(f'<span style="color:{TEXT_SECONDARY}">{"Yes" if p["stopAdded"] else "No"}</span>', unsafe_allow_html=True)
-        if cols[8].button("Select", key=f"add_{car['id']}"):
-            _select_car(car["id"], compound)
+        for p in proposals:
+            car = p["car"]
+            cols = st.columns(COLUMN_WIDTHS)
+            cols[0].write(car["model"])
+            cols[1].markdown(f'<span style="color:{TEXT_SECONDARY}">{car["category"]}</span>', unsafe_allow_html=True)
+            cols[2].markdown(f'<span style="font-variant-numeric:tabular-nums;">{car["loadingRatio"]:.2f}</span>', unsafe_allow_html=True)
+            cols[3].markdown(f'<span style="font-variant-numeric:tabular-nums;">{p["newTotal"]:.2f}</span>', unsafe_allow_html=True)
+            cols[4].markdown(f'<span style="font-variant-numeric:tabular-nums;color:{TEXT_SECONDARY}">{p["gapRemaining"]:.2f}</span>', unsafe_allow_html=True)
+            cols[5].markdown(_dot_label(p["integration"]), unsafe_allow_html=True)
+            cols[6].markdown(f'<span style="font-variant-numeric:tabular-nums;color:{TEXT_SECONDARY}">{p["detourKm"]:.1f}</span>', unsafe_allow_html=True)
+            cols[7].markdown(f'<span style="color:{TEXT_SECONDARY}">{"Yes" if p["stopAdded"] else "No"}</span>', unsafe_allow_html=True)
+            if cols[8].button("Select", key=f"add_{car['id']}"):
+                _select_car(car["id"], compound)

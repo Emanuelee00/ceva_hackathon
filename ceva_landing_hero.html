@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About CEVA Logistics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-900:#0B1E3D;
+    --navy-800:#122A50;
+    --navy-700:#1B3B6B;
+    --red-600:#E2231A;
+    --red-700:#B81A13;
+    --white:#FFFFFF;
+    --ink:#10182B;
+    --neutral-200:#E6E9F0;
+    --neutral-500:#6B7280;
+    --bg:#F5F6F9;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Public Sans",-apple-system,BlinkMacSystemFont,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  img{max-width:100%;display:block;}
+  h1,h2,h3{margin:0;font-family:"Archivo",sans-serif;font-weight:900;text-wrap:balance;}
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;cursor:pointer;}
+  .uc{text-transform:uppercase;letter-spacing:.06em;}
+
+  /* ---------- utility strip ---------- */
+  .utility-strip{
+    background:var(--navy-900);
+    border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .utility-strip-in{
+    max-width:1440px;margin:0 auto;padding:8px 28px;
+    display:flex;justify-content:flex-end;align-items:center;gap:22px;
+  }
+  .utility-strip a{
+    color:rgba(255,255,255,.82);font-size:12.5px;font-weight:600;
+    display:flex;align-items:center;gap:6px;
+  }
+
+  /* ---------- main nav ---------- */
+  .nav{background:var(--navy-900);}
+  .nav-in{
+    max-width:1440px;margin:0 auto;padding:0 0 0 28px;
+    display:flex;align-items:center;gap:44px;min-height:84px;
+  }
+  .logo{height:34px;width:auto;flex-shrink:0;}
+  .nav-links{display:flex;gap:34px;flex:1;}
+  .nav-links a{
+    font-family:"Archivo",sans-serif;font-weight:800;font-size:13.5px;
+    color:var(--white);letter-spacing:.05em;padding:8px 0;
+    border-bottom:2px solid transparent;transition:border-color .15s ease;
+  }
+  .nav-links a:hover{border-color:var(--red-600);}
+  .nav-utility{display:flex;align-items:center;gap:26px;}
+  .nav-utility-item{
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+    color:var(--white);font-size:11px;font-weight:600;text-align:center;line-height:1.2;
+  }
+  .nav-utility-item svg{width:19px;height:19px;}
+  .menu-btn{
+    background:var(--red-600);color:var(--white);border:none;
+    height:84px;padding:0 30px;display:flex;align-items:center;gap:12px;
+    font-family:"Archivo",sans-serif;font-weight:800;font-size:14.5px;letter-spacing:.04em;
+    transition:background .15s ease;
+  }
+  .menu-btn:hover{background:var(--red-700);}
+  .menu-btn svg{width:20px;height:20px;}
+
+  /* ---------- hero ---------- */
+  .hero{
+    position:relative;background:var(--navy-900);overflow:hidden;
+    padding-bottom:96px; /* room for the overlapping white card */
+  }
+  .hero-illustration{position:absolute;inset:0;z-index:0;}
+  .hero-illustration svg{width:100%;height:100%;display:block;}
+  .hero-scrim{
+    position:absolute;inset:0;z-index:1;
+    background:linear-gradient(100deg, rgba(11,30,61,.94) 0%, rgba(11,30,61,.75) 32%, rgba(11,30,61,.20) 58%, rgba(11,30,61,0) 72%);
+  }
+  .hero-in{
+    position:relative;z-index:2;max-width:1440px;margin:0 auto;
+    padding:96px 28px 70px;
+    display:grid;grid-template-columns:1fr 460px;gap:32px;align-items:center;
+  }
+  .hero-copy{max-width:640px;padding-right:24px;}
+  .hero-eyebrow{color:var(--red-600);font-family:"Archivo",sans-serif;font-weight:800;font-size:13px;letter-spacing:.14em;margin-bottom:18px;}
+  .hero-title{color:var(--white);font-size:clamp(34px,5vw,58px);line-height:1.04;text-transform:uppercase;letter-spacing:-0.01em;}
+  .hero-sub{color:rgba(255,255,255,.82);font-family:"Archivo",sans-serif;font-weight:700;font-size:clamp(18px,2.2vw,24px);margin-top:16px;}
+  .hero-cta{
+    margin-top:34px;display:inline-flex;align-items:center;gap:14px;
+    border:1.5px solid rgba(255,255,255,.75);color:var(--white);
+    padding:15px 30px;font-family:"Archivo",sans-serif;font-weight:800;font-size:13px;letter-spacing:.08em;
+    background:transparent;transition:background .15s ease,color .15s ease;
+  }
+  .hero-cta:hover{background:var(--white);color:var(--navy-900);}
+
+  .hero-panels{position:relative;height:420px;}
+  .promo{
+    position:absolute;top:0;bottom:0;width:230px;overflow:hidden;
+    border-left:1px solid rgba(255,255,255,.14);
+  }
+  .promo:first-child{left:0;}
+  .promo:last-child{left:210px;}
+  .promo svg{position:absolute;inset:0;width:100%;height:100%;}
+  .promo-caption{
+    position:absolute;left:16px;right:14px;bottom:18px;z-index:2;
+    color:var(--white);font-family:"Archivo",sans-serif;font-weight:800;
+    font-size:14px;line-height:1.2;letter-spacing:.02em;text-transform:uppercase;
+    text-shadow:0 2px 10px rgba(0,0,0,.35);
+  }
+
+  .hero-arrow{
+    position:absolute;z-index:3;right:44px;top:45%;transform:translateY(-50%);
+    width:52px;height:52px;background:var(--red-600);border:none;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 6px 18px rgba(0,0,0,.28);
+  }
+  .hero-arrow svg{width:22px;height:22px;}
+
+  /* ---------- overlapping utility card ---------- */
+  .util-card-wrap{
+    position:relative;z-index:4;max-width:1440px;margin:0 auto;padding:0 28px;
+  }
+  .util-card{
+    background:var(--white);width:min(680px,100%);
+    margin-top:-70px;
+    box-shadow:0 20px 44px rgba(11,30,61,.22);
+  }
+  .util-tabs{display:flex;border-bottom:1px solid var(--neutral-200);}
+  .util-tab{
+    padding:20px 26px;font-family:"Archivo",sans-serif;font-weight:800;font-size:13.5px;
+    color:var(--neutral-500);border-bottom:3px solid transparent;background:none;border-top:none;border-left:none;border-right:none;
+  }
+  .util-tab.active{color:var(--ink);border-color:var(--red-600);}
+  .util-search{display:flex;align-items:center;padding:22px 26px;gap:14px;}
+  .util-search input{
+    flex:1;border:1px solid var(--neutral-200);height:46px;padding:0 16px;
+    font-family:"Public Sans",sans-serif;font-size:14px;color:var(--ink);background:var(--bg);
+  }
+  .util-search input:focus{outline:2px solid var(--navy-700);outline-offset:1px;}
+  .util-search button{
+    width:46px;height:46px;background:var(--navy-900);border:none;color:var(--white);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .util-search button svg{width:18px;height:18px;}
+
+  /* ---------- capability strip ---------- */
+  .strip{max-width:1440px;margin:0 auto;padding:64px 28px 84px;}
+  .strip-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:36px;flex-wrap:wrap;}
+  .strip-head h2{font-size:clamp(24px,3vw,32px);text-transform:uppercase;color:var(--navy-900);letter-spacing:-0.01em;}
+  .strip-head p{color:var(--neutral-500);font-size:14.5px;max-width:380px;margin:8px 0 0;}
+  .strip-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--neutral-200);}
+  .strip-card{background:var(--white);padding:30px 26px;display:flex;flex-direction:column;gap:14px;}
+  .strip-num{font-family:"Archivo",sans-serif;font-weight:900;font-size:13px;color:var(--red-600);}
+  .strip-card h3{font-size:17px;color:var(--navy-900);text-transform:none;letter-spacing:0;}
+  .strip-card p{margin:0;color:var(--neutral-500);font-size:13.5px;line-height:1.5;}
+
+  @media (max-width:980px){
+    .hero-in{grid-template-columns:1fr;padding-top:56px;}
+    .hero-panels{display:none;}
+    .hero-arrow{display:none;}
+    .nav-links{display:none;}
+    .nav-in{padding-left:16px;}
+    .strip-grid{grid-template-columns:1fr 1fr;}
+    .util-card{margin-top:-40px;}
+  }
+  @media (max-width:520px){
+    .utility-strip-in{padding:8px 16px;}
+    .hero-in{padding:44px 16px 40px;}
+    .strip{padding:48px 16px 56px;}
+    .strip-grid{grid-template-columns:1fr;}
+    .util-card-wrap{padding:0 16px;}
+    .menu-btn{padding:0 18px;}
+    .menu-btn span{display:none;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="utility-strip">
+    <div class="utility-strip-in">
+      <a href="#">English
+        <svg viewBox="0 0 24 24" fill="none" width="11" height="11"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+      </a>
+      <a href="#">
+        <svg viewBox="0 0 24 24" fill="none" width="13" height="13"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Search
+      </a>
+    </div>
+  </div>
+
+  <header class="nav">
+    <div class="nav-in">
+      <img class="logo" src="assets/ceva_logo_reversed.svg" alt="CEVA Logistics">
+      <nav class="nav-links">
+        <a href="#">Services</a>
+        <a href="#">Careers</a>
+        <a href="#">Contact us</a>
+      </nav>
+      <div class="nav-utility">
+        <a class="nav-utility-item" href="#">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 20c1.6-4 5-6 8-6s6.4 2 8 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          myCEVA
+        </a>
+        <a class="nav-utility-item" href="#">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 22s7-7.4 7-12.5A7 7 0 0 0 5 9.5C5 14.6 12 22 12 22Z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="9.5" r="2.4" stroke="currentColor" stroke-width="2"/></svg>
+          Track &amp; trace
+        </a>
+        <a class="nav-utility-item" href="#">
+          <svg viewBox="0 0 24 24" fill="none"><rect x="5" y="3" width="14" height="18" rx="1" stroke="currentColor" stroke-width="2"/><path d="M8.5 8h7M8.5 12h7M8.5 16h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Quote &amp; services
+        </a>
+      </div>
+      <button class="menu-btn">
+        <span>Menu</span>
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-illustration" aria-hidden="true">
+      <svg viewBox="0 0 1440 620" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="rackGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#1B3B6B"/>
+            <stop offset="1" stop-color="#0B1E3D"/>
+          </linearGradient>
+          <linearGradient id="beamGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#3E5F94"/>
+            <stop offset="1" stop-color="#16305C"/>
+          </linearGradient>
+        </defs>
+        <rect width="1440" height="620" fill="url(#rackGrad)"/>
+        <g transform="translate(-60,-40) rotate(-8 720 320)" opacity="0.9">
+          <g id="rackRow">
+            <rect x="0" y="0" width="1700" height="26" fill="url(#beamGrad)"/>
+            <rect x="0" y="120" width="1700" height="26" fill="url(#beamGrad)"/>
+            <rect x="0" y="240" width="1700" height="26" fill="url(#beamGrad)"/>
+            <rect x="0" y="360" width="1700" height="26" fill="url(#beamGrad)"/>
+            <rect x="0" y="480" width="1700" height="26" fill="url(#beamGrad)"/>
+            <rect x="0" y="600" width="1700" height="26" fill="url(#beamGrad)"/>
+          </g>
+          <g opacity="0.85">
+            <rect x="40" y="28" width="150" height="86" fill="#24406F"/>
+            <rect x="210" y="28" width="150" height="86" fill="#2A497C"/>
+            <rect x="380" y="28" width="150" height="86" fill="#1E3760"/>
+            <rect x="40" y="148" width="150" height="86" fill="#1E3760"/>
+            <rect x="210" y="148" width="150" height="86" fill="#284670"/>
+            <rect x="380" y="148" width="150" height="86" fill="#24406F"/>
+            <rect x="40" y="268" width="150" height="86" fill="#2A497C"/>
+            <rect x="210" y="268" width="150" height="86" fill="#1E3760"/>
+            <rect x="380" y="268" width="150" height="86" fill="#284670"/>
+            <rect x="40" y="388" width="150" height="86" fill="#24406F"/>
+            <rect x="210" y="388" width="150" height="86" fill="#1E3760"/>
+            <rect x="380" y="388" width="150" height="86" fill="#2A497C"/>
+          </g>
+          <g stroke="#E2231A" stroke-width="4" opacity="0.55">
+            <line x1="0" y1="0" x2="1700" y2="60"/>
+            <line x1="0" y1="240" x2="1700" y2="300"/>
+            <line x1="0" y1="480" x2="1700" y2="540"/>
+          </g>
+        </g>
+        <rect width="1440" height="620" fill="#0B1E3D" opacity="0.18"/>
+      </svg>
+    </div>
+    <div class="hero-scrim" aria-hidden="true"></div>
+
+    <div class="hero-in">
+      <div class="hero-copy">
+        <div class="hero-eyebrow uc">Our story</div>
+        <h1 class="hero-title">About CEVA Logistics</h1>
+        <p class="hero-sub">Discover our origin story</p>
+        <a class="hero-cta uc" href="#">
+          Learn more
+          <svg viewBox="0 0 24 24" fill="none" width="14" height="14"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+
+      <div class="hero-panels" aria-hidden="true">
+        <div class="promo">
+          <svg viewBox="0 0 230 420" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <radialGradient id="p1g" cx="50%" cy="30%" r="80%">
+                <stop offset="0" stop-color="#3E5F94"/>
+                <stop offset="1" stop-color="#0B1E3D"/>
+              </radialGradient>
+            </defs>
+            <rect width="230" height="420" fill="url(#p1g)"/>
+            <g stroke="#E2231A" stroke-width="3" opacity="0.55" fill="none">
+              <path d="M20 300 Q70 260 60 200 Q52 150 100 130"/>
+              <path d="M40 340 Q95 300 85 230"/>
+            </g>
+            <circle cx="118" cy="150" r="46" fill="#F0C9A0"/>
+            <path d="M72 400 Q118 300 164 400Z" fill="#E7E9EE"/>
+            <path d="M78 155c0-30 22-52 40-52s40 22 40 52c0 8-2 14-6 18-6-14-16-22-34-22s-28 8-34 22c-4-4-6-10-6-18Z" fill="#1B1204"/>
+          </svg>
+          <div class="promo-caption">Rise in motion</div>
+        </div>
+        <div class="promo">
+          <svg viewBox="0 0 230 420" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <linearGradient id="p2g" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#16305C"/>
+                <stop offset="1" stop-color="#0B1E3D"/>
+              </linearGradient>
+            </defs>
+            <rect width="230" height="420" fill="url(#p2g)"/>
+            <g opacity="0.9">
+              <polygon points="-20,300 140,220 160,250 -20,340" fill="#E2231A"/>
+              <polygon points="-20,340 190,240 200,265 -20,375" fill="#B81A13"/>
+              <polygon points="20,150 210,80 220,105 30,178" fill="#3E5F94"/>
+            </g>
+          </svg>
+          <div class="promo-caption">Engineering winning solutions</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="hero-arrow" aria-label="Next">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+
+    <div class="util-card-wrap">
+      <div class="util-card">
+        <div class="util-tabs">
+          <button class="util-tab active">Track &amp; Trace</button>
+          <button class="util-tab">Get a Quote</button>
+          <button class="util-tab">Contact Us</button>
+          <button class="util-tab">myCEVA</button>
+        </div>
+        <div class="util-search">
+          <input type="text" id="tracking-number" placeholder="Enter number">
+          <button aria-label="Search">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2.2"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="strip">
+    <div class="strip-head">
+      <h2>Everywhere your freight needs to be</h2>
+      <p>160+ countries and territories, one global network — air, ocean, ground and contract logistics under one roof.</p>
+    </div>
+    <div class="strip-grid">
+      <div class="strip-card">
+        <div class="strip-num uc">Air</div>
+        <h3>Air freight</h3>
+        <p>Time-critical freight moved on the fastest reliable routing.</p>
+      </div>
+      <div class="strip-card">
+        <div class="strip-num uc">Ocean</div>
+        <h3>Ocean freight</h3>
+        <p>FCL and LCL capacity backed by long-term carrier partnerships.</p>
+      </div>
+      <div class="strip-card">
+        <div class="strip-num uc">Ground</div>
+        <h3>Ground &amp; road</h3>
+        <p>Regional and cross-border trucking with live shipment visibility.</p>
+      </div>
+      <div class="strip-card">
+        <div class="strip-num uc">Contract</div>
+        <h3>Contract logistics</h3>
+        <p>Warehousing and distribution built around your fulfilment cycle.</p>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>

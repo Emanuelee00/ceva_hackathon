@@ -13,7 +13,7 @@ from streamlit_folium import st_folium
 
 from mock_fleet import COMPOUND_COORDS
 from proposals import haversine_km
-from theme import ACCENT
+from theme import ACCENT, NAVY, TEXT_SECONDARY
 
 MARKER_CSS = (
     "background:{color};color:#fff;border-radius:50%;width:24px;height:24px;"
@@ -64,7 +64,7 @@ def render_trip_map(compound: str, destinations: list[dict]) -> dict | None:
     m = folium.Map(location=origin, tiles="OpenStreetMap")
     for stop_num, idx in enumerate(order):  # 0 = origin, unlabeled
         lat, lng = coords[idx]
-        color = "#17140F" if stop_num == 0 else ACCENT
+        color = NAVY if stop_num == 0 else ACCENT
         label = "" if stop_num == 0 else str(stop_num)
         tooltip = names[idx] if stop_num == 0 else f"{stop_num}. {names[idx]}"
         folium.Marker(
@@ -78,6 +78,12 @@ def render_trip_map(compound: str, destinations: list[dict]) -> dict | None:
     with col1:
         key = "map_" + compound + "_" + "_".join(sorted(names[1:]))
         st_folium(m, height=280, width=None, returned_objects=[], key=key)
+        st.markdown(
+            f'<div style="font-size:11.5px;color:{TEXT_SECONDARY};margin-top:4px;">'
+            f'<span style="color:{NAVY};">&#9679;</span> Origin (compound) &nbsp;&nbsp; '
+            f'<span style="color:{ACCENT};">&#9679;</span> Numbered delivery stops, in visiting order</div>',
+            unsafe_allow_html=True,
+        )
     with col2:
         st.metric("Stops", len(coords) - 1)
         st.metric("Total distance", f"{solved['km']} km")
