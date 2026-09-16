@@ -26,8 +26,8 @@ OSRM_TRIP_URL = (
     "?source=first&roundtrip=false&geometries=geojson&overview=full"
 )
 
-DARK_TILES = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-DARK_TILES_ATTR = '&copy; <a href="https://carto.com/attributions">CARTO</a> &copy; OpenStreetMap contributors'
+DARK_TILES = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"
+DARK_TILES_ATTR = "Esri, HERE, Garmin, OpenStreetMap contributors"
 
 
 @st.cache_data(ttl=3600)

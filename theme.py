@@ -64,7 +64,11 @@ def inject_base_css() -> None:
 
         .ceva-header {{
             display: flex; align-items: center; justify-content: space-between;
-            background: {NAVY}; margin: -1rem -5vw 28px -5vw; padding: 30px 5vw;
+            background:
+                linear-gradient(100deg, rgba(8,14,32,.6) 0%, rgba(8,14,32,.25) 45%, rgba(8,14,32,0) 70%),
+                repeating-linear-gradient(-18deg, #26386A 0px, #26386A 52px, #1B2A54 52px, #1B2A54 104px),
+                {NAVY};
+            margin: -1rem -5vw 28px -5vw; padding: 30px 5vw;
         }}
         .ceva-header-left {{ display: flex; align-items: center; gap: 18px; }}
         .ceva-header img {{ height: 42px; }}
