@@ -1,0 +1,16 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Dati (grandi/riservati, non versionare)
+data/
+*.xlsx
+*.xls
+*:Zone.Identifier
