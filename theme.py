@@ -116,8 +116,13 @@ def inject_base_css() -> None:
 
         .ceva-header {{
             display: flex; align-items: center; justify-content: space-between;
-            background: {NAVY}; border-bottom: 1px solid {HAIRLINE};
-            margin: -1rem -5vw 28px -5vw; padding: 22px 5vw;
+            background:
+                linear-gradient(90deg, rgba(7,21,40,.90) 0%, rgba(7,21,40,.72) 45%, rgba(7,21,40,.38) 100%),
+                url("app/static/ceva_banner.png") center 58% / cover no-repeat,
+                {NAVY};
+            border-bottom: 1px solid {HAIRLINE};
+            margin: -1rem -5vw 28px -5vw; padding: 32px 5vw;
+            min-height: 180px; box-sizing: border-box; gap: 24px;
         }}
         .ceva-header-left {{ display: flex; align-items: center; gap: 18px; }}
         .ceva-header img {{ height: 36px; }}
@@ -135,6 +140,13 @@ def inject_base_css() -> None:
         .ceva-demo-tag {{
             font-family: "Archivo", sans-serif; font-size: 11px; font-weight: 800; letter-spacing: .05em;
             text-transform: uppercase; color: #fff; background: {ACCENT}; padding: 7px 14px;
+        }}
+        @media (max-width: 800px) {{
+            .ceva-header {{ flex-wrap: wrap; min-height: 200px; background-position: center, 65% 58%; }}
+            .ceva-header-left {{ gap: 12px; }}
+            .ceva-header img {{ height: 28px; }}
+            .ceva-product {{ font-size: 17px; }}
+            .ceva-product-sub {{ font-size: 11px; }}
         }}
 
         .ceva-rail {{ margin: 4px 0 26px 0; }}

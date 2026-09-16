@@ -9,7 +9,10 @@ from langchain_ollama import ChatOllama
 from agent.schema import RouterDecision
 from agent.tools import TOOL_DESCRIPTIONS
 
-MODEL = "qwen2.5:3b-instruct"
+MODEL = "qwen2.5:1.5b-instruct"  # switched down from 3b: this machine ran out of
+# memory for the 3b model mid-hackathon (system under memory pressure from many
+# other open processes); the 1.5b model needs roughly half the RAM. Re-test
+# router accuracy if you revert this once more memory is free.
 
 
 ROUTER_EXAMPLES = [
