@@ -10,7 +10,7 @@ import streamlit as st
 from agent.autofill_graph import build_autofill_graph
 from loading_check import LOADING_ALERT_THRESHOLD, check_loading
 from mock_fleet import MOCK_CARS
-from theme import DOT_ON_ROUTE, STATUS_ALERT, TEXT_PRIMARY, TEXT_SECONDARY, stat_tile
+from theme import TEXT_DIM, panel_eyebrow, stat_tile
 
 STOP_REASON_TEXT = {
     "optimized": "Gap closed.",
@@ -42,7 +42,7 @@ def _render_autofill_log() -> None:
     if not log:
         return
     before, after, truck_max = log["before_loading"], log["lot_loading"], log["truck_max"]
-    with st.container(border=True):
+    with st.container(border=True, key="panel-autofill"):
         st.markdown(f"**Auto-optimize — {STOP_REASON_TEXT.get(log['stop_reason'], log['stop_reason'])}**")
         c1, c2, c3 = st.columns(3)
         c1.markdown(stat_tile("Loading — before", f"{before:.2f}"), unsafe_allow_html=True)
@@ -57,7 +57,7 @@ def _render_autofill_log() -> None:
 
 
 def render_loading_alert() -> None:
-    st.subheader("3. Check loading")
+    st.markdown(panel_eyebrow("03", "Check loading"), unsafe_allow_html=True)
     truck = st.session_state.get("picked_truck")
     lot_loading = st.session_state.get("lot_loading", 0.0)
     if not truck:
@@ -72,40 +72,34 @@ def render_loading_alert() -> None:
 
     if check["alert"]:
         pct = min(check["lot_loading"] / check["truck_max"], 1.0) * 100 if check["truck_max"] else 0
-        with st.container(border=True):
-            st.markdown(
-                f'<div style="font-size:15px;font-weight:600;color:{TEXT_PRIMARY};">&#9888; Under-optimized trip</div>'
-                f'<div style="font-size:13px;color:{TEXT_SECONDARY};margin-top:2px;">'
-                f'Truck {truck["plate"]} has spare capacity that could be filled before departure.</div>',
-                unsafe_allow_html=True,
-            )
-            g1, g2 = st.columns([1, 2])
-            with g1:
-                st.markdown(stat_tile("Gap", f"{check['gap']:.2f}", accent=True), unsafe_allow_html=True)
-            with g2:
-                st.markdown(
-                    '<div style="padding-top:14px;">'
-                    f'<div class="ceva-meter-track"><div class="ceva-meter-fill" '
-                    f'style="width:{pct:.0f}%;background:{STATUS_ALERT};"></div></div>'
-                    f'<div style="font-size:12px;color:{TEXT_SECONDARY};margin-top:7px;">'
-                    f'{check["lot_loading"]:.2f} current / {check["truck_max"]:.2f} historical reference — '
-                    f'{pct:.0f}% of reference used</div></div>',
-                    unsafe_allow_html=True,
-                )
-            c1, c2 = st.columns(2)
-            with c1:
-                if st.button("See cars to add", width="stretch"):
-                    st.session_state.want_car_suggestions = True
-            with c2:
-                if st.button("Auto-optimize (agent)", type="primary", width="stretch"):
-                    _run_autofill(truck, lot_loading, threshold)
+        st.markdown(
+            '<div class="ceva-alert-panel">'
+            '<span class="ceva-chip ceva-chip-alert">&#9888; Alert</span>'
+            '<div class="ceva-alert-title">Under-optimized trip</div>'
+            f'<div style="font-size:13px;color:{TEXT_DIM};margin-top:4px;">'
+            f'Truck {truck["plate"]} has spare capacity that could be filled before departure.</div>'
+            '<div style="display:flex;align-items:flex-end;gap:28px;margin-top:18px;">'
+            f'<div class="ceva-gap-value">{check["gap"]:.2f}</div>'
+            '<div style="flex:1;padding-bottom:6px;">'
+            f'<div class="ceva-meter-track"><div class="ceva-meter-fill" style="width:{pct:.0f}%;"></div></div>'
+            f'<div style="font-size:12px;color:{TEXT_DIM};margin-top:7px;" class="ceva-mono">'
+            f'{check["lot_loading"]:.2f} / {check["truck_max"]:.2f} ref — {pct:.0f}% used · '
+            f'threshold {threshold:.1f}</div></div></div></div>',
+            unsafe_allow_html=True,
+        )
+        c1, c2 = st.columns(2)
+        with c1:
+            if st.button("See cars to add", width="stretch", key="see_cars_btn"):
+                st.session_state.want_car_suggestions = True
+        with c2:
+            if st.button("Auto-optimize (agent)", type="primary", width="stretch"):
+                _run_autofill(truck, lot_loading, threshold)
     else:
         st.markdown(
-            f'<div class="ceva-card" style="display:flex;align-items:center;gap:9px;">'
-            f'<span style="color:{DOT_ON_ROUTE};font-size:16px;">&#10003;</span>'
-            f'<span style="font-size:13.5px;color:{TEXT_PRIMARY};">Optimized loading — '
-            f'{check["lot_loading"]:.2f} / {check["truck_max"]:.2f} historical reference '
-            f'(gap {check["gap"]:.2f})</span></div>',
+            '<div class="ceva-ok-panel">'
+            '<span class="ceva-chip ceva-chip-ok">&#10003; Optimized</span>'
+            f'<span class="ceva-mono" style="font-size:13.5px;color:#fff;">'
+            f'{check["lot_loading"]:.2f} / {check["truck_max"]:.2f} ref (gap {check["gap"]:.2f})</span></div>',
             unsafe_allow_html=True,
         )
 

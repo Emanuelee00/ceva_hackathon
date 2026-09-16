@@ -10,7 +10,7 @@ import pandas as pd
 import streamlit as st
 
 from mock_fleet import COMPOUNDS, MOCK_CARS
-from theme import badge, stat_tile
+from theme import badge, panel_eyebrow, stat_tile
 from trip_map import render_trip_map
 
 
@@ -33,10 +33,8 @@ def _selected_destinations(ids: list) -> list[dict]:
 
 
 def render_lot_builder() -> None:
-    h1, h2 = st.columns([3, 1])
-    h1.subheader("1. Compose the lot")
-    h2.markdown(
-        f'<div style="text-align:right;margin-top:8px;">{badge("mock", "Simulated inventory")}</div>',
+    st.markdown(
+        panel_eyebrow("01", "Compose the lot", badge("mock", "Simulated inventory")),
         unsafe_allow_html=True,
     )
     compound = st.selectbox("Departure compound", COMPOUNDS, key="lot_compound")

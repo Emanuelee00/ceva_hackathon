@@ -3,6 +3,110 @@
 Note for Claude: read this file at the start of the conversation to resume
 work without redoing the same analysis from scratch.
 
+## Team is now editing this repo concurrently — check `git stash list`
+
+Multiple people are working on this hackathon repo at once (team of 8).
+Mid-session, uncommitted work from another session appeared on disk
+(`presentation.py`, `assets/presentation.css`, `assets/dispatch_hero.png`,
+plus edits to `app.py`/`CONTEXT.md`) while a large "dark control room"
+redesign prompt was being applied here. Per the user's explicit choice —
+keep `trip_map.py`'s independent redesign (the dark/cyan Leaflet map with
+its own CSS, already good), set the rest aside — that other work was
+stashed rather than deleted: `git stash list` should show one entry
+("presentation.py redesign WIP (teammate/other session, set aside)"). It
+is fully recoverable (`git stash pop` / `git stash show -p`), not lost.
+**Before assuming what's on disk is the full picture, run `git stash
+list`** — if that stash is still there, someone may want it reconciled
+with whatever's since been built on top of it.
+
+## Visual redesign — "control room" dark theme (most recent)
+
+Full palette/typography swap, requested via a detailed external prompt
+("Control Room redesign"), applied to `theme.py`, `.streamlit/config.toml`,
+`app.py`, `lot_builder.py`, `truck_picker.py`, `alert_ui.py`,
+`proposals_ui.py` — deliberately **not** `trip_map.py` (excluded per the
+user's explicit instruction; it already has its own independent dark/cyan
+styling, untouched by this pass) and not `analyze.py`/`cost_estimate.py`/
+`agent/*`/`mock_fleet.py`/`loading_check.py`/`proposals.py`/`stats.py`
+(no logic changes anywhere — pure styling/markup).
+
+- **Palette**: `BG_DEEP #071528` (app bg), `NAVY #0B1E3D` (header bar),
+  `PANEL rgba(255,255,255,.055)` + `PANEL_BORDER rgba(255,255,255,.13)`
+  (translucent "glass" panels), `ACCENT #E2231A` (alerts / active step /
+  primary CTA only), `TEXT_ON_DARK` white / `TEXT_DIM` 70% / `TEXT_FAINT`
+  55%, `HAIRLINE rgba(255,255,255,.10)`, status `DOT_ON_ROUTE #7BD69A` /
+  `DOT_DETOUR #E8B24A`. Old light-theme names (`TEXT_PRIMARY`,
+  `TEXT_SECONDARY`, `TEXT_MUTED`, `BORDER`, `SURFACE`, `BG`) kept as
+  aliases pointing at the new dark tokens so nothing else had to change
+  its imports. Contrast verified by hand (WCAG formula, not eyeballed):
+  white and `TEXT_DIM` both clear 4.5:1 against both `BG_DEEP` (18.3:1 /
+  9.3:1) and the translucent red alert panel (17.2:1 / 8.9:1).
+- **Type**: Archivo 800-900 uppercase for headings/eyebrows/buttons,
+  IBM Plex Mono for every number/plate/ratio (`.ceva-stat-value`,
+  `.ceva-plate`, `.ceva-gap-value`, table numeric cells — via a shared
+  `.ceva-mono` class or `font-family` inline), Public Sans loaded for body
+  (Streamlit's own text still renders in its default sans since overriding
+  every native widget's font wasn't in scope — the custom HTML elements
+  use the new faces).
+- **Key technical finding, this Streamlit version (1.63.0)**: a bordered
+  `st.container(border=True)` has **no stable `data-testid`** to target
+  from injected CSS (no `stVerticalBlockBorderWrapper` in this version —
+  confirmed via Playwright DOM dump; the border is applied through an
+  unpredictable `st-emotion-cache-xxxxx` class that changes per build).
+  Fix: pass an explicit `key="panel-<name>"` to `st.container(...)` —
+  Streamlit *does* reliably emit a matching `st-key-<name>` class for
+  keyed widgets/containers (confirmed) — then target
+  `[class*="st-key-panel-"]` in CSS. Applied to `truck_picker.py`'s stat
+  panel (`panel-truck`), `alert_ui.py`'s auto-optimize summary
+  (`panel-autofill`), `proposals_ui.py`'s table (`panel-proposals`), and
+  `app.py`'s per-chat-turn result panel (`panel-chat-<index>` — required
+  threading an index through `render_result(tool, result, key)`, the one
+  signature change in this pass, not a branching/logic change).
+- **Header**: flat `NAVY` bar (no gradient/stripes — explicit
+  instruction), reversed logo, 1px hairline rule, "FVL DISPATCH
+  INTELLIGENCE" (Archivo 900), a mono `LIVE` chip in a hairline box, and
+  the red demo tag.
+- **Step rail**: replaced the old dot/arrow chain with a 2px hairline
+  track + red fill sized to a completed fraction, labels `01 lot / 02
+  truck / 03 loading / 04 optimize` in mono uppercase. Derived from only
+  the two real signals available (`lot_car_ids` non-empty, `picked_truck`
+  set) — steps 3/4 have no persistent tracked signal so they're never
+  marked "done" (avoids fabricating progress state that isn't really
+  tracked).
+- **Alert card**: translucent red panel (`rgba(226,35,26,.13)` bg,
+  `rgba(226,35,26,.5)` border), solid-red `ALERT` chip, Archivo 900 26px
+  title, 44px mono red gap figure next to a white-on-translucent meter.
+  OK state: same panel geometry, hairline border, green outline `OPTIMIZED`
+  chip — no red anywhere, per spec. Buttons: secondary ("See cars to add")
+  outlined white that inverts to solid red on hover generally, with a
+  `key="see_cars_btn"`-scoped override making *that specific* button
+  invert to white-on-navy instead (the prompt wanted different hover
+  behavior for that one vs. the proposals' "Select" buttons — solved via
+  the same keyed-class technique above, since Streamlit gives every
+  secondary button the same generic testid otherwise).
+- **Tile provider note carried over**: `trip_map.py` (untouched this pass)
+  already switched off CartoDB's raw basemap CDN too — see the "Standalone
+  landing-hero mockup" section below for that whole thread (Esri
+  `World_Dark_Gray_Base`, no key required, confirmed working).
+- **Background image hook**: `theme.py` checks
+  `Path("static/bg_compound.jpg").exists()` and layers a photographic
+  backdrop with a navy scrim if present, else falls back cleanly to flat
+  `BG_DEEP` — no such photo exists yet (explicit `# TODO` left in the
+  code), don't add one without checking with the user first (was
+  explicitly asked not to source one automatically for this pass).
+
+Verified via `AppTest` across all 4 states the redesign needed to survive:
+no lot selected, lot selected, alert state, OK state (after Auto-optimize)
+— zero exceptions in every case, plus the manual "See cars to add" (step
+4) flow and an injected chat turn (methodology expander). Verified via
+Playwright DOM inspection (not screenshot — same sandbox "fonts loaded"
+hang documented elsewhere in this file): app background computed as
+`rgb(7,21,40)`, header `rgb(11,30,61)`, rail fill `rgb(226,35,26)`, the
+`panel-truck` container's computed background/border match `PANEL`/
+`PANEL_BORDER` exactly, plate renders `Archivo, sans-serif` at `40px`, and
+the header has `background-image: none` (confirming no leftover gradient
+stripes from the previous pass).
+
 ## Goal
 
 Team of 8, hackathon with the CEVA/FVL dataset on vehicle transport in

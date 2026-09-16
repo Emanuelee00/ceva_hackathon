@@ -1,16 +1,16 @@
-# CEVA brand theme, sourced from the official current logo (2023 mark,
-# assets/ceva_logo.svg, fetched from Wikimedia Commons): navy #1d2546 and
-# red #ff0000 are the exact hexes baked into that file. primaryColor below
-# is stepped down from the pure logo red for WCAG AA contrast on filled
-# buttons (white-on-#ff0000 is 4.0:1, under the 4.5:1 text minimum;
-# #d6001c clears 5.4:1 while reading as the same hue next to the mark).
+# CEVA "control room" dark theme: a deep navy operations-console
+# background (#071528) with CEVA red (#E2231A, close to the official
+# logo's pure #ff0000 — assets/ceva_logo_reversed.svg) reserved for
+# alerts, the active step, and the primary CTA — never used as decor.
+# See theme.py for the full token set (panels, hairlines, status colors)
+# and where each one is used.
 [theme]
-primaryColor = "#D6001C"
-backgroundColor = "#F6F6F4"
-secondaryBackgroundColor = "#EEF1F5"
-textColor = "#181A22"
+base = "dark"
+primaryColor = "#E2231A"
+backgroundColor = "#071528"
+secondaryBackgroundColor = "#0F2440"
+textColor = "#FFFFFF"
 font = "sans serif"
-base = "light"
 
 # Serves ./static/* at /app/static/* on the same port as the app — so a
 # standalone mockup (e.g. ceva_landing_hero.html) is reachable through the

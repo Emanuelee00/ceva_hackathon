@@ -22,8 +22,6 @@ from agent.tools import methodology
 
 st.set_page_config(page_title="FVL Dispatch Intelligence — CEVA", layout="wide")
 
-STEPS = ["Compose lot", "Assign truck", "Check loading", "Optimize"]
-
 
 @st.cache_resource
 def load_data():
@@ -42,14 +40,14 @@ def get_graph():
     return build_graph(df, frames)
 
 
-def render_result(tool: str, result: dict) -> None:
-    with st.container(border=True):
+def render_result(tool: str, result: dict, key: str) -> None:
+    with st.container(border=True, key=f"panel-chat-{key}"):
         if tool == "empty_km_cost":
             c1, c2, c3 = st.columns(3)
             c1.metric("Empty km share", f"{result['empty_share']:.1%}")
             c2.metric("All-in cost", f"€{result['cost_allin']:,.0f}")
             c3.metric("CO2", f"{result['co2_t']:,.0f} t")
-            st.bar_chart({name: km for name, km in result["top_origins"]}, color="#D6001C")
+            st.bar_chart({name: km for name, km in result["top_origins"]}, color="#E2231A")
         elif tool == "matching_opportunity":
             c1, c2 = st.columns(2)
             c1.metric("Matched share (trips)", f"{result['matched_share']:.1%}")
@@ -80,11 +78,11 @@ def render_chat() -> None:
     if "history" not in st.session_state:
         st.session_state.history = []
 
-    for turn in st.session_state.history:
+    for i, turn in enumerate(st.session_state.history):
         with st.chat_message(turn["role"]):
             st.write(turn["content"])
             if turn.get("tool") and turn.get("result"):
-                render_result(turn["tool"], turn["result"])
+                render_result(turn["tool"], turn["result"], str(i))
 
     if question := st.chat_input("Ask about empty km, matching, geography, fleet, or delays..."):
         st.session_state.history.append({"role": "user", "content": question})
@@ -101,17 +99,22 @@ def render_dispatcher_form() -> None:
     _, frames = load_data()
     trucks = truck_options(frames["fleet_raw"])
 
-    cars_ready = bool(st.session_state.get("lot_car_ids"))
-    step_html = ""
-    for i, label in enumerate(STEPS):
-        cls = "done" if i == 0 and cars_ready else ""
-        arrow = '<span class="ceva-step-arrow">&#8594;</span>' if i > 0 else ""
-        step_html += (
-            f'{arrow}<div class="ceva-step {cls}">'
-            f'<div class="ceva-step-dot">{"&#10003;" if cls == "done" else i + 1}</div>'
-            f'<div class="ceva-step-label">{label}</div></div>'
-        )
-    st.markdown(f'<div class="ceva-steps">{step_html}</div>', unsafe_allow_html=True)
+    lot_done = bool(st.session_state.get("lot_car_ids"))
+    truck_done = lot_done and st.session_state.get("picked_truck") is not None
+    labels = ["01 lot", "02 truck", "03 loading", "04 optimize"]
+    step_done = [lot_done, truck_done, truck_done, False]
+    current = next((i for i, d in enumerate(step_done) if not d), len(labels) - 1)
+    fraction = current / (len(labels) - 1)
+    rail_labels = "".join(
+        f'<span class="ceva-rail-label {"done" if i < current else "current" if i == current else ""}">{lbl}</span>'
+        for i, lbl in enumerate(labels)
+    )
+    st.markdown(
+        '<div class="ceva-rail">'
+        f'<div class="ceva-rail-track"><div class="ceva-rail-fill" style="width:{fraction * 100:.0f}%;"></div></div>'
+        f'<div class="ceva-rail-labels">{rail_labels}</div></div>',
+        unsafe_allow_html=True,
+    )
 
     col1, col2 = st.columns([1, 1], gap="large")
     with col1:
@@ -137,9 +140,12 @@ def main() -> None:
     st.markdown(
         '<div class="ceva-header"><div class="ceva-header-left">'
         f'<img src="{logo_data_uri()}" alt="CEVA Logistics">'
+        '<div class="ceva-header-rule"></div>'
         '<div><div class="ceva-product">FVL Dispatch Intelligence</div>'
-        '<div class="ceva-product-sub">Transport analytics &amp; dispatcher assist</div></div>'
-        '</div><span class="ceva-demo-tag">Hackathon Demo — Prototype</span></div>',
+        '<div class="ceva-product-sub">Transport analytics &amp; dispatcher assist · FVL 2026 dataset</div></div>'
+        '</div><div class="ceva-header-right">'
+        '<span class="ceva-live-chip">LIVE</span>'
+        '<span class="ceva-demo-tag">Hackathon Demo — Prototype</span></div></div>',
         unsafe_allow_html=True,
     )
     tab1, tab2 = st.tabs(["Dispatcher check", "Ask the data"])

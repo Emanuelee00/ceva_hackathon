@@ -8,7 +8,7 @@ step 3.
 import pandas as pd
 import streamlit as st
 
-from theme import badge, stat_tile
+from theme import badge, panel_eyebrow, stat_tile
 
 
 def _truck_history(trips: pd.DataFrame, plate: str, limit: int = 15) -> pd.DataFrame:
@@ -19,10 +19,8 @@ def _truck_history(trips: pd.DataFrame, plate: str, limit: int = 15) -> pd.DataF
 
 
 def render_truck_picker(trucks: list[dict], trips: pd.DataFrame) -> None:
-    h1, h2 = st.columns([3, 1])
-    h1.subheader("2. Assign a truck")
-    h2.markdown(
-        f'<div style="text-align:right;margin-top:8px;">{badge("real", "Real fleet data")}</div>',
+    st.markdown(
+        panel_eyebrow("02", "Assign a truck", badge("real", "Real fleet data")),
         unsafe_allow_html=True,
     )
     labels = {t["id"]: f"{t['plate']} (max {t['maxLoading']}, {t['n_trips']} trips on record)" for t in trucks}
@@ -30,13 +28,17 @@ def render_truck_picker(trucks: list[dict], trips: pd.DataFrame) -> None:
     truck = next(t for t in trucks if t["id"] == truck_id)
     st.session_state.picked_truck = truck
 
-    with st.container(border=True):
-        st.markdown(f"**{truck['plate']}** · real truck, {truck['n_trips']} trips in the 2026 FVL data")
+    with st.container(border=True, key="panel-truck"):
+        st.markdown(
+            f'<div class="ceva-plate">{truck["plate"]}</div>'
+            f'<div class="ceva-plate-sub">Real truck · {truck["n_trips"]} trips in the 2026 FVL data</div>',
+            unsafe_allow_html=True,
+        )
         lot_loading = st.session_state.get("lot_loading", 0.0)
         c1, c2 = st.columns(2)
         c1.markdown(stat_tile("Lot loading", f"{lot_loading:.2f}"), unsafe_allow_html=True)
         c2.markdown(
-            stat_tile("Truck max (historical reference)", f"{truck['maxLoading']:.2f}"),
+            stat_tile("Truck max ref", f"{truck['maxLoading']:.2f}"),
             unsafe_allow_html=True,
         )
 
