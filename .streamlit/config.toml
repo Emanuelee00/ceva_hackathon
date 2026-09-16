@@ -11,3 +11,10 @@ secondaryBackgroundColor = "#EEF1F5"
 textColor = "#181A22"
 font = "sans serif"
 base = "light"
+
+# Serves ./static/* at /app/static/* on the same port as the app — so a
+# standalone mockup (e.g. ceva_landing_hero.html) is reachable through the
+# one port-forwarded URL this environment already exposes, instead of a
+# separate ad-hoc server on a port that isn't forwarded.
+[server]
+enableStaticServing = true

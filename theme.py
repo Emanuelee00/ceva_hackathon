@@ -12,7 +12,7 @@ from pathlib import Path
 
 import streamlit as st
 
-LOGO_PATH = Path(__file__).parent / "assets" / "ceva_logo.svg"
+LOGO_PATH = Path(__file__).parent / "assets" / "ceva_logo_reversed.svg"  # white+red, for the navy header
 
 NAVY = "#1D2546"
 ACCENT = "#D6001C"  # kept as ACCENT (not RED) — existing call sites import this name
@@ -43,23 +43,40 @@ def logo_data_uri() -> str:
 
 def inject_base_css() -> None:
     st.markdown(
-        f"""<style>
+        f"""<link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&display=swap" rel="stylesheet">
+        <style>
         .stApp {{ background: {BG}; }}
         h1, h2, h3, .stMarkdown p {{ color: {TEXT_PRIMARY}; }}
-        [data-testid="stTabs"] button[role="tab"] {{ font-size: 14.5px; font-weight: 600; }}
+        h1, h2, h3, [data-testid="stTab"] p {{
+            font-family: "Archivo", sans-serif !important; font-weight: 800 !important;
+        }}
+        [data-testid="stTab"] {{
+            letter-spacing: .05em; text-transform: uppercase; padding-top: 10px;
+        }}
+        [data-testid="stTab"] p {{ font-size: 13.5px !important; }}
+        .stButton button, [data-testid="stBaseButton-primary"], [data-testid="stBaseButton-secondary"] {{
+            border-radius: 0 !important; font-family: "Archivo", sans-serif; font-weight: 800;
+            letter-spacing: .03em; text-transform: uppercase; font-size: 12.5px !important;
+        }}
+        [data-testid="stVerticalBlockBorderWrapper"] {{ border-radius: 0 !important; }}
 
         .ceva-header {{
             display: flex; align-items: center; justify-content: space-between;
-            padding-bottom: 14px; margin-bottom: 6px; border-bottom: 1px solid {BORDER};
+            background: {NAVY}; margin: -1rem -5vw 28px -5vw; padding: 30px 5vw;
         }}
-        .ceva-header-left {{ display: flex; align-items: center; gap: 14px; }}
-        .ceva-header img {{ height: 30px; }}
-        .ceva-product {{ font-size: 15px; font-weight: 600; color: {TEXT_PRIMARY}; letter-spacing: -0.2px; }}
-        .ceva-product-sub {{ font-size: 12.5px; color: {TEXT_SECONDARY}; margin-top: 1px; }}
+        .ceva-header-left {{ display: flex; align-items: center; gap: 18px; }}
+        .ceva-header img {{ height: 42px; }}
+        .ceva-product {{
+            font-family: "Archivo", sans-serif; font-weight: 900; font-size: 20px; color: #fff;
+            letter-spacing: .01em; text-transform: uppercase; line-height: 1.1;
+        }}
+        .ceva-product-sub {{ font-size: 12.5px; color: rgba(255,255,255,.68); margin-top: 3px; }}
         .ceva-demo-tag {{
-            font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
-            color: {NAVY}; background: {SURFACE}; border: 1px solid {BORDER}; border-radius: 4px;
-            padding: 4px 9px;
+            font-family: "Archivo", sans-serif; font-size: 11px; font-weight: 800; letter-spacing: .05em;
+            text-transform: uppercase; color: #fff; background: {ACCENT};
+            padding: 7px 14px;
         }}
 
         .ceva-steps {{ display: flex; align-items: center; gap: 0; margin: 4px 0 22px 0; }}
@@ -75,29 +92,30 @@ def inject_base_css() -> None:
         .ceva-step.done .ceva-step-label, .ceva-step.active .ceva-step-label {{ color: {TEXT_PRIMARY}; }}
         .ceva-step-arrow {{ color: {BORDER}; margin: 0 14px; font-size: 13px; }}
 
-        .ceva-card {{ border: 1px solid {BORDER}; border-radius: 8px; padding: 16px 18px; background: {SURFACE}; }}
+        .ceva-card {{ border: 1px solid {BORDER}; padding: 16px 18px; background: {SURFACE}; }}
 
         .ceva-stat-label {{
-            font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: {TEXT_SECONDARY};
+            font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: {TEXT_SECONDARY};
+            font-family: "Archivo", sans-serif;
         }}
         .ceva-stat-value {{ font-size: 30px; font-weight: 700; color: {TEXT_PRIMARY}; line-height: 1.15; margin-top: 2px; }}
         .ceva-stat-value.accent {{ color: {ACCENT}; }}
         .ceva-stat-sub {{ font-size: 12px; color: {TEXT_MUTED}; margin-top: 3px; }}
 
-        .ceva-meter-track {{ background: #EDECE7; border-radius: 3px; height: 7px; overflow: hidden; }}
-        .ceva-meter-fill {{ height: 100%; border-radius: 3px; }}
+        .ceva-meter-track {{ background: #EDECE7; height: 7px; overflow: hidden; }}
+        .ceva-meter-fill {{ height: 100%; }}
 
         .ceva-badge {{
-            display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 600;
-            letter-spacing: .03em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px;
-            border: 1px solid transparent;
+            display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 700;
+            letter-spacing: .03em; text-transform: uppercase; padding: 3px 8px;
+            border: 1px solid transparent; font-family: "Archivo", sans-serif;
         }}
         .ceva-badge-real {{ color: {DOT_ON_ROUTE}; background: #EAF3EC; border-color: #D3E6D7; }}
         .ceva-badge-mock {{ color: {TEXT_SECONDARY}; background: #F0EFEC; border-color: {BORDER}; }}
         .ceva-badge-estimate {{ color: {DOT_DETOUR}; background: #FBF0DE; border-color: #EEDCB5; }}
 
         .ceva-empty {{
-            border: 1px dashed {BORDER}; border-radius: 8px; padding: 20px; text-align: center;
+            border: 1px dashed {BORDER}; padding: 20px; text-align: center;
             color: {TEXT_SECONDARY}; font-size: 13px;
         }}
         </style>""",
